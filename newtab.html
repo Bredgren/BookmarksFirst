@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>New Tab</title>
+    <link rel="stylesheet" type="text/css" href="style/reset.min.css">
+    <link rel="stylesheet" type="text/css" href="style/style.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/script.js"></script>
+  </head>
+  <body>
+    <div id="top-bar" class="clearfix">
+      <div id="search-box">
+        <input id="search">
+        <div id="clear-button" class="transparent-button">Clear</div>
+      </div>
+      <div id="settings-button" class="transparent-button"></div>
+      <div id="settings-window">
+        <h1>Settings</h1>
+        <h2>Search</h2>
+        <form id="search-settings">
+          <div class="radio">
+            <input type="radio" name="search" value="key">
+            <span>On Change</span>
+          </div>
+          <div class="radio">
+            <input type="radio" name="search" value="enter">
+            <span>On Enter</span>
+          </div>
+        </form>
+        <h2>Default Folder</h2>
+        <div id="current-default"></div>
+        <div id="default-folder-button" class="button clearfix">
+          Make current folder default
+        </div>
+      </div>
+    </div>
+
+    <div id="display-bar" class="clearfix">
+      <div id="bread-crumbs"><ol></ol></div>
+      <div id="edit-button" class="transparent-button bar-button">
+        Toggle edit mode
+      </div>
+      <div id="new-buttons">
+        <div id="new-folder-button" class="transparent-button bar-button">
+          New Folder
+        </div>
+        <div id="new-page-button" class="transparent-button bar-button">
+          New Page
+        </div>
+      </div>
+    </div>
+
+    <div id="bookmarks">
+      <ul></ul>
+    </div>
+
+    <div id="no-results">No Results</div>
+
+    <div id="grey-out"></div>
+
+    <div id="edit-folder" class="edit-box centered">
+      <h1>Rename Folder</h1>
+      <form class="clearfix">
+        <div class="label">
+          Name:
+        </div>
+        <input id="input-folder-name">
+      </form>
+      <div class="button cancel">Cancel</div>
+      <div class="button ok">OK</div>
+    </div>
+
+    <div id="edit-item" class="edit-box centered">
+      <h1>Edit Page</h1>
+      <form class="clearfix">
+        <div class="label">
+          Name:
+        </div>
+        <input id="input-item-name">
+        <div id="edit-item-url">
+          <div class="label">
+            URL:
+          </div>
+          <input id="input-item-url">
+        </div>
+      </form>
+      <div class="button cancel">Cancel</div>
+      <div class="button ok">OK</div>
+    </div>
+
+    <div id="cut-box" class="edit-box clearfix">
+      <h3 id="cut-title">Selected items:</h3>
+      <ul id="cut-items"></ul>
+      <div id="cut-msg">Items will be pasted into current folder.</div>
+      <div class="button cancel">Cancel</div>
+      <div class="button ok">Paste (Ctrl+V)</div>
+    </div>
+  </body>
+</html>
