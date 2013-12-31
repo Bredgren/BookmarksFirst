@@ -29,7 +29,18 @@
           </div>
         </form>
         <h2>Default Folder</h2>
-        <div id="current-default"></div>
+        <form id="folder-settings">
+          <div class="radio">
+            <input type="radio" name="folder" value="last">
+            <span>Last</span>
+          </div>
+          <div class="radio">
+            <input type="radio" name="folder" value="specific">
+            <span>Specific
+              <div id="current-default"></div>
+            </span>
+          </div>
+        </form>
         <div id="default-folder-button" class="button clearfix">
           Make current folder default
         </div>

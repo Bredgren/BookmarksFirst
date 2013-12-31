@@ -60,17 +60,6 @@
   Storage = (function() {
     function Storage() {}
 
-    Storage.prototype.getDefaultFolder = function() {
-      if (!localStorage["default_folder"]) {
-        this.setDefaultFolder('0');
-      }
-      return localStorage["default_folder"];
-    };
-
-    Storage.prototype.setDefaultFolder = function(id) {
-      return localStorage["default_folder"] = id;
-    };
-
     Storage.prototype.getSearchMode = function() {
       if (!localStorage["search_mode"]) {
         this.setSearchMode('key');
@@ -82,18 +71,40 @@
       return localStorage["search_mode"] = mode;
     };
 
+    Storage.prototype.getFolderMode = function() {
+      if (!localStorage["folder_mode"]) {
+        this.setFolderMode('last');
+      }
+      return localStorage["folder_mode"];
+    };
+
+    Storage.prototype.setFolderMode = function(mode) {
+      return localStorage["folder_mode"] = mode;
+    };
+
+    Storage.prototype.getDefaultFolder = function() {
+      if (!localStorage["default_folder"]) {
+        this.setDefaultFolder('0');
+      }
+      return localStorage["default_folder"];
+    };
+
+    Storage.prototype.setDefaultFolder = function(id) {
+      return localStorage["default_folder"] = id;
+    };
+
     return Storage;
 
   })();
 
   Main = (function() {
-    Main.prototype.MAX_ITEM_TITLE_LENGTH = 45;
+    Main.prototype.MAX_ITEM_TITLE_LENGTH = 35;
 
     Main.prototype.MAX_FOLDER_TITLE_LENGTH = 35;
 
     function Main() {
       this._onCut = __bind(this._onCut, this);
-      var mode;
+      var folder_mode, search_mode;
 
       this.storage = new Storage();
       this.current_node = this.storage.getDefaultFolder();
@@ -111,8 +122,14 @@
       $('#cut-box').hide();
       $('#no-results').hide();
       $('#settings-window').hide();
-      mode = this.storage.getSearchMode();
-      $("input:radio[value='" + mode + "']").attr('checked', true);
+      search_mode = this.storage.getSearchMode();
+      $("input:radio[value='" + search_mode + "']").attr('checked', true);
+      folder_mode = this.storage.getFolderMode();
+      $("input:radio[value='" + folder_mode + "']").attr('checked', true);
+      if (folder_mode !== 'specific') {
+        $('#current-default').hide();
+        $('#default-folder-button').hide();
+      }
       this._hideEditBoxes();
       this._setupBindings();
     }
@@ -203,7 +220,7 @@
     };
 
     Main.prototype._getNodeAnchor = function(node, li) {
-      var anchor, item, label, nodes, small_btns, _ref,
+      var anchor, img, item, label, nodes, onHoverIn, onHoverOut, small_btns, x, y, _ref,
         _this = this;
 
       anchor = $('<a>');
@@ -213,6 +230,19 @@
       if (node.url) {
         anchor.attr("href", node.url);
         anchor.addClass("item");
+        img = "chrome://favicon/" + node.url;
+        x = 112 / 2 - 8;
+        y = 27;
+        onHoverIn = function() {
+          return anchor.css('background', "linear-gradient(rgba(0, 0, 0, 0),                                  rgba(0, 0, 0, 0.05),                                  rgba(0, 0, 0, 0.15)) top,                                  url(" + img + ") " + x + "px " + y + "px no-repeat");
+        };
+        onHoverOut = function() {
+          anchor.css('background-image', "url(" + img + ")");
+          anchor.css('background-repeat', 'no-repeat');
+          return anchor.css('background-position', "" + x + "px " + y + "px");
+        };
+        onHoverOut();
+        anchor.hover(onHoverIn, onHoverOut);
       } else {
         anchor.click(function() {
           return _this._gotoNode(node.id);
@@ -425,7 +455,7 @@
     };
 
     Main.prototype._setupBindings = function() {
-      var onCancelButton, onCancelMove, onClearSearch, onClickPage, onEditButton, onKeyDown, onMouseUp, onMove, onNewFolder, onNewPage, onOkFolderButton, onOkItemButton, onPaste, onSearchEnter, onSearchKeyUp, onSearchRadio, onSetDefaultFolder, search,
+      var onCancelButton, onCancelMove, onClearSearch, onClickPage, onEditButton, onFolderRadio, onKeyDown, onMouseUp, onMove, onNewFolder, onNewPage, onOkFolderButton, onOkItemButton, onPaste, onSearchEnter, onSearchKeyUp, onSearchRadio, onSetDefaultFolder, search,
         _this = this;
 
       search = function() {
@@ -493,6 +523,21 @@
         return _this.storage.setSearchMode(mode);
       };
       $("input:radio[name='search']").click(onSearchRadio);
+      onFolderRadio = function() {
+        var mode;
+
+        mode = $("input:radio[name='folder']:checked").val();
+        console.log(mode);
+        _this.storage.setFolderMode(mode);
+        if (mode === 'specific') {
+          $('#current-default').show();
+          return $('#default-folder-button').show();
+        } else {
+          $('#current-default').hide();
+          return $('#default-folder-button').hide();
+        }
+      };
+      $("input:radio[name='folder']").click(onFolderRadio);
       onSetDefaultFolder = function() {
         _this.storage.setDefaultFolder(_this.current_node);
         return _this._updateDefaultDisplay();
@@ -644,6 +689,9 @@
     };
 
     Main.prototype._gotoNode = function(id) {
+      if (this.storage.getFolderMode() === 'last') {
+        this.storage.setDefaultFolder(id);
+      }
       this.current_node = id;
       return this.dumpChildren();
     };

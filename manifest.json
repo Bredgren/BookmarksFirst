@@ -4,7 +4,8 @@
   "description": "A new tab page that's all about bookmarks.",
   "author": "Brandon Edgren",
   "permissions": [
-      "bookmarks"
+      "bookmarks",
+      "chrome://favicon/"
   ],
   "chrome_url_overrides": {
       "newtab": "newtab.html"

@@ -22,15 +22,6 @@ stopPropagation = (event) ->
 class Storage
   constructor: ->
 
-  getDefaultFolder: ->
-    if not localStorage["default_folder"]
-      @setDefaultFolder('0')
-
-    return localStorage["default_folder"]
-
-  setDefaultFolder: (id) ->
-    localStorage["default_folder"] = id
-
   getSearchMode: ->
     if not localStorage["search_mode"]
       @setSearchMode('key')
@@ -40,8 +31,26 @@ class Storage
   setSearchMode: (mode) ->
     localStorage["search_mode"] = mode
 
+  getFolderMode: ->
+    if not localStorage["folder_mode"]
+      @setFolderMode('last')
+
+    return localStorage["folder_mode"]
+
+  setFolderMode: (mode) ->
+    localStorage["folder_mode"] = mode
+
+  getDefaultFolder: ->
+    if not localStorage["default_folder"]
+      @setDefaultFolder('0')
+
+    return localStorage["default_folder"]
+
+  setDefaultFolder: (id) ->
+    localStorage["default_folder"] = id
+
 class Main
-  MAX_ITEM_TITLE_LENGTH: 45
+  MAX_ITEM_TITLE_LENGTH: 35
   MAX_FOLDER_TITLE_LENGTH: 35
 
   constructor: ->
@@ -62,8 +71,16 @@ class Main
     $('#cut-box').hide()
     $('#no-results').hide()
     $('#settings-window').hide()
-    mode = @storage.getSearchMode()
-    $("input:radio[value='" + mode + "']").attr('checked', true)
+
+    search_mode = @storage.getSearchMode()
+    $("input:radio[value='" + search_mode + "']").attr('checked', true)
+
+    folder_mode = @storage.getFolderMode()
+    $("input:radio[value='" + folder_mode + "']").attr('checked', true)
+
+    if folder_mode isnt 'specific'
+      $('#current-default').hide()
+      $('#default-folder-button').hide()
 
     @_hideEditBoxes()
 
@@ -129,6 +146,25 @@ class Main
     if node.url
       anchor.attr("href", node.url)
       anchor.addClass("item")
+
+      img = "chrome://favicon/" + node.url
+      x = 112 / 2 - 8 # (anchor width) / 2 - (half icon width)
+      y = 27;
+
+      onHoverIn = ->
+        anchor.css('background', "linear-gradient(rgba(0, 0, 0, 0),
+                                  rgba(0, 0, 0, 0.05),
+                                  rgba(0, 0, 0, 0.15)) top,
+                                  url(#{img}) #{x}px #{y}px no-repeat")
+
+      onHoverOut = ->
+        anchor.css('background-image', "url(#{img})")
+        anchor.css('background-repeat', 'no-repeat')
+        anchor.css('background-position', "#{x}px #{y}px")
+
+      onHoverOut()
+
+      anchor.hover(onHoverIn, onHoverOut)
     else
       anchor.click(() => @_gotoNode(node.id))
       anchor.addClass("folder")
@@ -344,6 +380,19 @@ class Main
 
     $("input:radio[name='search']").click(onSearchRadio)
 
+    onFolderRadio = =>
+      mode = $("input:radio[name='folder']:checked").val()
+      console.log(mode)
+      @storage.setFolderMode(mode)
+      if mode is 'specific'
+        $('#current-default').show()
+        $('#default-folder-button').show()
+      else
+        $('#current-default').hide()
+        $('#default-folder-button').hide()
+
+    $("input:radio[name='folder']").click(onFolderRadio)
+
     onSetDefaultFolder = =>
       @storage.setDefaultFolder(@current_node)
       @_updateDefaultDisplay()
@@ -464,6 +513,8 @@ class Main
     $(document).keydown(onKeyDown)
 
   _gotoNode: (id) ->
+    if @storage.getFolderMode() is 'last'
+      @storage.setDefaultFolder(id)
     @current_node = id
     @dumpChildren()
 

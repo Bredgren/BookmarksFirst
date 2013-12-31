@@ -171,6 +171,10 @@ form div.radio span {
     vertical-align: middle;
 }
 
+#folder-settings {
+    margin-bottom: 10px;
+}
+
 #current-default {
     margin-bottom: 5px;
     padding: 2px;
@@ -178,7 +182,11 @@ form div.radio span {
     color: #070;
     border: 1px solid;
     border-radius: 5px;
-    float: left;
+    display: inline;
+}
+
+#default-folder-button {
+    margin-left: 20px;
 }
 
 #display-bar {
@@ -324,21 +332,11 @@ form div.radio span {
 }
 
 #bookmarks ul li a.item {
+    background: rgb(255, 255, 255);
     text-decoration: none;
     word-wrap: break-word;
     color: black;
-    background: rgb(255, 255, 255);
 }
-
-#bookmarks ul li a.item:hover {
-    background: linear-gradient(rgba(0, 0, 0, 0),
-                                rgba(0, 0, 0, 0.05),
-                                rgba(0, 0, 0, 0.15));
-}
-
-/* #bookmarks ul li a.item span { */
-/*     position: static; */
-/* } */
 
 #bookmarks ul li a span {
     position: absolute;
