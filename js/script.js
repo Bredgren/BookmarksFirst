@@ -122,6 +122,7 @@
       $('#cut-box').hide();
       $('#no-results').hide();
       $('#settings-window').hide();
+      $('#drag-placeholder').hide();
       search_mode = this.storage.getSearchMode();
       $("input:radio[value='" + search_mode + "']").attr('checked', true);
       folder_mode = this.storage.getFolderMode();
@@ -237,9 +238,7 @@
           return anchor.css('background', "linear-gradient(rgba(0, 0, 0, 0),                                  rgba(0, 0, 0, 0.05),                                  rgba(0, 0, 0, 0.15)) top,                                  url(" + img + ") " + x + "px " + y + "px no-repeat");
         };
         onHoverOut = function() {
-          anchor.css('background-image', "url(" + img + ")");
-          anchor.css('background-repeat', 'no-repeat');
-          return anchor.css('background-position', "" + x + "px " + y + "px");
+          return anchor.css('background', "url(" + img + ") " + x + "px " + y + "px no-repeat,                                  rgb(255, 255, 255) top");
         };
         onHoverOut();
         anchor.hover(onHoverIn, onHoverOut);
@@ -372,7 +371,10 @@
         };
         _this.grabbed.element.css('position', 'relative');
         _this._moveGrabbed(event.pageX, event.pageY);
-        return _this.grabbed.element.css('z-index', '100');
+        _this.grabbed.element.css('z-index', '100');
+        $('#drag-placeholder').show();
+        $('#drag-placeholder').css('left', _this.grabbed.pos.left);
+        return $('#drag-placeholder').css('top', _this.grabbed.pos.top);
       };
       move_btn.click(onMoveClick);
       move_btn.mousedown(onMoveMouseDown);
@@ -455,7 +457,7 @@
     };
 
     Main.prototype._setupBindings = function() {
-      var onCancelButton, onCancelMove, onClearSearch, onClickPage, onEditButton, onFolderRadio, onKeyDown, onMouseUp, onMove, onNewFolder, onNewPage, onOkFolderButton, onOkItemButton, onPaste, onSearchEnter, onSearchKeyUp, onSearchRadio, onSetDefaultFolder, search,
+      var onCancelButton, onCancelMove, onClearSearch, onClickPage, onEditButton, onFolderRadio, onItemKeyPress, onKeyDown, onMouseUp, onMove, onNewFolder, onNewPage, onOkFolderButton, onOkItemButton, onPaste, onSearchEnter, onSearchKeyUp, onSearchRadio, onSetDefaultFolder, search,
         _this = this;
 
       search = function() {
@@ -550,7 +552,8 @@
       onCancelButton = function() {
         return _this._hideEditBoxes();
       };
-      $('.cancel').click(onCancelButton);
+      $('#edit-folder .cancel').click(onCancelButton);
+      $('#edit-item .cancel').click(onCancelButton);
       onOkFolderButton = function() {
         var changes;
 
@@ -563,6 +566,7 @@
         });
       };
       $('#edit-folder .ok').click(onOkFolderButton);
+      $('#edit-folder form').submit(onOkFolderButton);
       onOkItemButton = function() {
         var changes;
 
@@ -576,6 +580,13 @@
         });
       };
       $('#edit-item .ok').click(onOkItemButton);
+      onItemKeyPress = function(event) {
+        if (event.which === 13) {
+          return onOkItemButton();
+        }
+      };
+      $('#input-item-name').keypress(onItemKeyPress);
+      $('#input-item-url').keypress(onItemKeyPress);
       onNewFolder = function() {
         var folder, onCreated;
 
@@ -620,6 +631,8 @@
             _this.grabbed.element.css('position', 'static');
             _this.grabbed.pos = _this.grabbed.element.position();
             _this.grabbed.element.css('position', 'relative');
+            $('#drag-placeholder').css('left', _this.grabbed.pos.left);
+            $('#drag-placeholder').css('top', _this.grabbed.pos.top);
           }
           return _this._moveGrabbed(event.pageX, event.pageY);
         }
@@ -632,7 +645,8 @@
           onMove = function() {
             _this.grabbed.element.css('position', 'static');
             _this.grabbed.element.css('z-index', '0');
-            return _this.grabbed = false;
+            _this.grabbed = false;
+            return $('#drag-placeholder').hide();
           };
           destination = {
             parentId: _this.current_node,

@@ -71,6 +71,7 @@ class Main
     $('#cut-box').hide()
     $('#no-results').hide()
     $('#settings-window').hide()
+    $('#drag-placeholder').hide()
 
     search_mode = @storage.getSearchMode()
     $("input:radio[value='" + search_mode + "']").attr('checked', true)
@@ -158,9 +159,8 @@ class Main
                                   url(#{img}) #{x}px #{y}px no-repeat")
 
       onHoverOut = ->
-        anchor.css('background-image', "url(#{img})")
-        anchor.css('background-repeat', 'no-repeat')
-        anchor.css('background-position', "#{x}px #{y}px")
+        anchor.css('background', "url(#{img}) #{x}px #{y}px no-repeat,
+                                  rgb(255, 255, 255) top")
 
       onHoverOut()
 
@@ -265,6 +265,10 @@ class Main
       @grabbed.element.css('position', 'relative')
       @_moveGrabbed(event.pageX, event.pageY)
       @grabbed.element.css('z-index', '100')
+
+      $('#drag-placeholder').show()
+      $('#drag-placeholder').css('left', @grabbed.pos.left)
+      $('#drag-placeholder').css('top', @grabbed.pos.top)
 
     move_btn.click(onMoveClick)
     move_btn.mousedown(onMoveMouseDown)
@@ -407,7 +411,8 @@ class Main
     onCancelButton = =>
       @_hideEditBoxes()
 
-    $('.cancel').click(onCancelButton)
+    $('#edit-folder .cancel').click(onCancelButton)
+    $('#edit-item .cancel').click(onCancelButton)
 
     onOkFolderButton = =>
       changes = {
@@ -420,6 +425,8 @@ class Main
 
     $('#edit-folder .ok').click(onOkFolderButton)
 
+    $('#edit-folder form').submit(onOkFolderButton)
+
     onOkItemButton = =>
       changes = {
         title: $('#input-item-name').val(),
@@ -431,6 +438,13 @@ class Main
       )
 
     $('#edit-item .ok').click(onOkItemButton)
+
+    onItemKeyPress = (event) =>
+      if event.which is 13 # Enter
+        onOkItemButton()
+
+    $('#input-item-name').keypress(onItemKeyPress)
+    $('#input-item-url').keypress(onItemKeyPress)
 
     onNewFolder = =>
       folder = {
@@ -470,6 +484,9 @@ class Main
           @grabbed.element.css('position', 'static')
           @grabbed.pos = @grabbed.element.position()
           @grabbed.element.css('position', 'relative')
+          $('#drag-placeholder').css('left', @grabbed.pos.left)
+          $('#drag-placeholder').css('top', @grabbed.pos.top)
+
 
         @_moveGrabbed(event.pageX, event.pageY)
 
@@ -481,6 +498,7 @@ class Main
           @grabbed.element.css('position', 'static')
           @grabbed.element.css('z-index', '0')
           @grabbed = false
+          $('#drag-placeholder').hide()
 
         destination = {parentId: @current_node, index: @grabbed.index}
         chrome.bookmarks.move(@grabbed.id, destination, onMove)
