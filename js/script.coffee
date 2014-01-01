@@ -156,7 +156,8 @@ class Main
         anchor.css('background', "linear-gradient(rgba(0, 0, 0, 0),
                                   rgba(0, 0, 0, 0.05),
                                   rgba(0, 0, 0, 0.15)) top,
-                                  url(#{img}) #{x}px #{y}px no-repeat")
+                                  url(#{img}) #{x}px #{y}px no-repeat,
+                                  rgb(255, 255, 255) top")
 
       onHoverOut = ->
         anchor.css('background', "url(#{img}) #{x}px #{y}px no-repeat,
@@ -305,6 +306,9 @@ class Main
 
       arr = zip(nodes.reverse(), [nodes.length-1..0])
       append_node(node[0], node[1] > 0) for node in arr
+
+      min_width = $('#bread-crumbs').width()
+      $('#container').css('min-width', min_width)
 
     handleNode = (node, nodes) ->
       if node.parentId

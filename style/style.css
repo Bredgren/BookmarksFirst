@@ -85,11 +85,15 @@ html[xmlns] .clearfix {
     height: 1%;
 }
 
+#container {
+    width: 80%;
+    margin: auto;
+}
+
 #top-bar {
     background: linear-gradient(#fe9, #fb6);
     border: 1px solid #ea2;
     border-radius: 5px;
-    width: 80%;
     margin: 20px auto;
     padding: 5px;
     position: relative;
@@ -193,21 +197,17 @@ form div.radio span {
     background: linear-gradient(#fe9, #fb6);
     border: 1px solid #ea2;
     border-radius: 5px;
-    width: 80%;
-    margin: 20px auto 0 auto;
+    margin: 20px auto 40px auto;
     padding: 5px;
     position: relative;
     display: block;
 }
 
 #bread-crumbs {
-    float: left;
-    height: 20px;
-    padding-top: 4px; /* Fixes wierd offset issue (TODO: look into this) */
     position: absolute;
-    top: 0;
-    bottom: 0;
-    margin: auto;
+    top: 60px;
+    left: 0;
+    white-space: nowrap;
     -webkit-user-select: none;
 }
 
@@ -223,6 +223,10 @@ form div.radio span {
     border-width: 1px;
 
     background: linear-gradient(#fff, #bbb);
+}
+
+#bread-crumbs ol li:last-child {
+    background: linear-gradient(#9e9, #3b3);
 }
 
 #bread-crumbs ol li:not(:first-child) {
@@ -300,7 +304,6 @@ form div.radio span {
 }
 
 #bookmarks {
-    width: 80%;
     margin: 0 auto;
     clear: both;
     -webkit-user-select: none;
@@ -328,7 +331,8 @@ form div.radio span {
     background: linear-gradient(rgba(0, 0, 0, 0),
                                 rgba(0, 0, 0, 0.05),
                                 rgba(0, 0, 0, 0.15)),
-                url('../img/folder.png') no-repeat top;
+                url('../img/folder.png') no-repeat top,
+                rgb(255, 255, 255);
 }
 
 #bookmarks ul li a.item {

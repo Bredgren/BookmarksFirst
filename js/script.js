@@ -235,7 +235,7 @@
         x = 112 / 2 - 8;
         y = 27;
         onHoverIn = function() {
-          return anchor.css('background', "linear-gradient(rgba(0, 0, 0, 0),                                  rgba(0, 0, 0, 0.05),                                  rgba(0, 0, 0, 0.15)) top,                                  url(" + img + ") " + x + "px " + y + "px no-repeat");
+          return anchor.css('background', "linear-gradient(rgba(0, 0, 0, 0),                                  rgba(0, 0, 0, 0.05),                                  rgba(0, 0, 0, 0.15)) top,                                  url(" + img + ") " + x + "px " + y + "px no-repeat,                                  rgb(255, 255, 255) top");
         };
         onHoverOut = function() {
           return anchor.css('background', "url(" + img + ") " + x + "px " + y + "px no-repeat,                                  rgb(255, 255, 255) top");
@@ -404,7 +404,7 @@
         _this = this;
 
       draw = function(nodes) {
-        var append_node, arr, crumbs_list, node, _i, _j, _len, _ref, _results, _results1;
+        var append_node, arr, crumbs_list, min_width, node, _i, _j, _len, _ref, _results;
 
         crumbs_list = $('#bread-crumbs > ol');
         crumbs_list.empty();
@@ -427,12 +427,12 @@
           for (var _i = _ref = nodes.length - 1; _ref <= 0 ? _i <= 0 : _i >= 0; _ref <= 0 ? _i++ : _i--){ _results.push(_i); }
           return _results;
         }).apply(this));
-        _results1 = [];
         for (_j = 0, _len = arr.length; _j < _len; _j++) {
           node = arr[_j];
-          _results1.push(append_node(node[0], node[1] > 0));
+          append_node(node[0], node[1] > 0);
         }
-        return _results1;
+        min_width = $('#bread-crumbs').width();
+        return $('#container').css('min-width', min_width);
       };
       handleNode = function(node, nodes) {
         var onget;
