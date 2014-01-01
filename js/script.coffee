@@ -67,7 +67,7 @@ class Main
     @cut_items = []
 
     $('#clear-button').hide()
-    $('#new-buttons').hide()
+    $('#edit-buttons').hide()
     $('#cut-box').hide()
     $('#no-results').hide()
     $('#settings-window').hide()
@@ -567,10 +567,10 @@ class Main
     @edit_mode = not @edit_mode
     if @edit_mode
       $('.small-btns').show()
-      $('#new-buttons').show()
+      $('#edit-buttons').show()
     else
       $('.small-btns').hide()
-      $('#new-buttons').hide()
+      $('#edit-buttons').hide()
 
   _hideEditBoxes: ->
     $('#grey-out').hide()

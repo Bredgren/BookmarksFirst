@@ -244,7 +244,6 @@ form div.radio span {
 }
 
 .bar-button {
-    float: right;
     padding: 5px 10px;
     margin-top: 2px;
     margin-bottom: 2px;
@@ -256,12 +255,15 @@ form div.radio span {
     margin-left: 3px;
 }
 
-#edit-button {
-    margin-left: 10px;
+#new-page-button,
+#new-folder-button,
+#cut-all-button {
+    float: right;
 }
 
-#edit-button:hover {
-    margin-left: 8px;
+#open-all-button,
+#edit-button {
+    float: left;
 }
 
 #no-results {

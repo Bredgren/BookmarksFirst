@@ -118,7 +118,7 @@
       this.index_over = null;
       this.cut_items = [];
       $('#clear-button').hide();
-      $('#new-buttons').hide();
+      $('#edit-buttons').hide();
       $('#cut-box').hide();
       $('#no-results').hide();
       $('#settings-window').hide();
@@ -745,10 +745,10 @@
       this.edit_mode = !this.edit_mode;
       if (this.edit_mode) {
         $('.small-btns').show();
-        return $('#new-buttons').show();
+        return $('#edit-buttons').show();
       } else {
         $('.small-btns').hide();
-        return $('#new-buttons').hide();
+        return $('#edit-buttons').hide();
       }
     };
 
