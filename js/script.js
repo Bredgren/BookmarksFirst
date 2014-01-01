@@ -221,7 +221,7 @@
     };
 
     Main.prototype._getNodeAnchor = function(node, li) {
-      var anchor, img, item, label, nodes, onGetChildren, onHoverIn, onHoverOut, small_btns, x, y, _ref,
+      var anchor, img, item, label, onGetChildren, onHoverIn, onHoverOut, small_btns, x, y, _ref,
         _this = this;
 
       anchor = $('<a>');
@@ -256,18 +256,17 @@
       }
       anchor.attr('id', node.id);
       anchor.attr('title', node.title);
-      nodes = (function() {
-        var _i, _len, _ref, _results;
+      if (_ref = node.id, __indexOf.call((function() {
+        var _i, _len, _ref1, _results;
 
-        _ref = this.cut_items;
+        _ref1 = this.cut_items;
         _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          item = _ref[_i];
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          item = _ref1[_i];
           _results.push(item.node.id);
         }
         return _results;
-      }).call(this);
-      if (_ref = node.id, __indexOf.call(nodes, _ref) >= 0) {
+      }).call(this), _ref) >= 0) {
         anchor.css('border-color', 'rgb(0, 150, 0)');
       }
       return anchor;
@@ -342,9 +341,25 @@
       var _this = this;
 
       return function(event) {
+        var item, _ref;
+
         stopPropagation(event);
-        $('#' + node.id).css('border-color', 'rgb(0, 150, 0)');
-        return _this._addCutItem(node, label_text);
+        if (_ref = node.id, __indexOf.call((function() {
+          var _i, _len, _ref1, _results;
+
+          _ref1 = this.cut_items;
+          _results = [];
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            item = _ref1[_i];
+            _results.push(item.node.id);
+          }
+          return _results;
+        }).call(_this), _ref) >= 0) {
+          return _this._removeCutItem(node, label_text);
+        } else {
+          $('#' + node.id).css('border-color', 'rgb(0, 150, 0)');
+          return _this._addCutItem(node, label_text);
+        }
       };
     };
 
@@ -463,7 +478,7 @@
     };
 
     Main.prototype._setupBindings = function() {
-      var onCancelButton, onCancelMove, onClearSearch, onClickPage, onEditButton, onFolderRadio, onItemKeyPress, onKeyDown, onKeyPressFolder, onMouseUp, onMove, onNewFolder, onNewPage, onOkFolderButton, onOkItemButton, onPaste, onSearchEnter, onSearchKeyUp, onSearchRadio, onSetDefaultFolder, search,
+      var onCancelButton, onCancelMove, onClearSearch, onClickPage, onCutAll, onEditButton, onFolderRadio, onItemKeyPress, onKeyDown, onKeyPressFolder, onMouseUp, onMove, onNewFolder, onNewPage, onOkFolderButton, onOkItemButton, onOpenAll, onPaste, onSearchEnter, onSearchKeyUp, onSearchRadio, onSetDefaultFolder, search,
         _this = this;
 
       search = function() {
@@ -535,7 +550,6 @@
         var mode;
 
         mode = $("input:radio[name='folder']:checked").val();
-        console.log(mode);
         _this.storage.setFolderMode(mode);
         if (mode === 'specific') {
           $('#current-default').show();
@@ -551,6 +565,10 @@
         return _this._updateDefaultDisplay();
       };
       $('#default-folder-button').click(onSetDefaultFolder);
+      onOpenAll = function() {
+        return console.log('open all');
+      };
+      $('#open-all-button').click(onOpenAll);
       onEditButton = function() {
         return _this._toggleEditMode();
       };
@@ -626,6 +644,10 @@
         return chrome.bookmarks.create(page, onCreated);
       };
       $('#new-page-button').click(onNewPage);
+      onCutAll = function() {
+        return $('.cut-btn').trigger('click');
+      };
+      $('#cut-all-button').click(onCutAll);
       onMove = function(event) {
         var n, nth_item;
 
@@ -780,15 +802,21 @@
     };
 
     Main.prototype._addCutItem = function(node, label_text) {
-      var btn, cut_item, div, e, item, list, onItemClick, _i, _len, _ref,
+      var btn, cut_item, div, item, list, onItemClick, _ref,
         _this = this;
 
-      _ref = this.cut_items;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        e = _ref[_i];
-        if (e.node === node) {
-          return;
+      if (_ref = node.id, __indexOf.call((function() {
+        var _i, _len, _ref1, _results;
+
+        _ref1 = this.cut_items;
+        _results = [];
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          item = _ref1[_i];
+          _results.push(item.node.id);
         }
+        return _results;
+      }).call(this), _ref) >= 0) {
+        return;
       }
       list = $('#cut-items');
       item = $('<li>');
@@ -803,7 +831,6 @@
       };
       div.click(onItemClick);
       btn = '#' + node.id + ' div.cut-btn';
-      $(btn).click(onItemClick);
       $(btn).attr('title', "Deselect");
       cut_item = {
         node: node,
@@ -815,15 +842,19 @@
     };
 
     Main.prototype._removeCutItem = function(node) {
-      var btn, cut_item, i, index, label_text, _i, _ref;
+      var btn, cut_item, index, item, label_text;
 
-      index = -1;
-      for (i = _i = 0, _ref = this.cut_items.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        if (this.cut_items[i].node === node) {
-          index = i;
-          break;
+      index = ((function() {
+        var _i, _len, _ref, _results;
+
+        _ref = this.cut_items;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          _results.push(item.node.id);
         }
-      }
+        return _results;
+      }).call(this)).indexOf(node.id);
       if (index !== -1) {
         cut_item = this.cut_items[index];
         cut_item.item.remove();
@@ -835,7 +866,6 @@
         $('#' + node.id).css('border-color', '');
         label_text = $('#' + node.id + ' span').text();
         btn = '#' + node.id + ' div.cut-btn';
-        $(btn).click(this._onCut(node, label_text));
         return $(btn).attr('title', "Move to new folder");
       }
     };

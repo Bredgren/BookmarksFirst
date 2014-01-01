@@ -179,8 +179,7 @@ class Main
     anchor.attr('id', node.id)
     anchor.attr('title', node.title)
 
-    nodes = (item.node.id for item in @cut_items)
-    if node.id in nodes
+    if node.id in (item.node.id for item in @cut_items)
       anchor.css('border-color', 'rgb(0, 150, 0)')
 
     return anchor
@@ -241,9 +240,11 @@ class Main
   _onCut: (node, label_text) =>
     return (event) =>
       stopPropagation(event)
-      $('#' + node.id).css('border-color', 'rgb(0, 150, 0)')
-      @_addCutItem(node, label_text)
-
+      if node.id in (item.node.id for item in @cut_items)
+        @_removeCutItem(node, label_text)
+      else
+        $('#' + node.id).css('border-color', 'rgb(0, 150, 0)')
+        @_addCutItem(node, label_text)
 
   _getNodeSmallCut: (node, label, anchor) ->
     cut_btn = $('<div>')
@@ -396,7 +397,6 @@ class Main
 
     onFolderRadio = =>
       mode = $("input:radio[name='folder']:checked").val()
-      console.log(mode)
       @storage.setFolderMode(mode)
       if mode is 'specific'
         $('#current-default').show()
@@ -412,6 +412,11 @@ class Main
       @_updateDefaultDisplay()
 
     $('#default-folder-button').click(onSetDefaultFolder)
+
+    onOpenAll = =>
+      console.log('open all')
+
+    $('#open-all-button').click(onOpenAll)
 
     onEditButton = =>
       @_toggleEditMode()
@@ -483,6 +488,14 @@ class Main
       chrome.bookmarks.create(page, onCreated)
 
     $('#new-page-button').click(onNewPage)
+
+    onCutAll = =>
+      # if non are cut or all are cut
+      $('.cut-btn').trigger('click')
+      # else
+      #   cut the uncut ones
+
+    $('#cut-all-button').click(onCutAll)
 
     onMove = (event) =>
       if @grabbed
@@ -596,9 +609,7 @@ class Main
     @grabbed.element.css('top', y - @grabbed.pos.top + 5)
 
   _addCutItem: (node, label_text) ->
-    for e in @cut_items
-      if e.node is node
-        return
+    return if node.id in (item.node.id for item in @cut_items)
 
     list = $('#cut-items')
     item = $('<li>')
@@ -616,7 +627,6 @@ class Main
     div.click(onItemClick)
 
     btn = '#' + node.id + ' div.cut-btn'
-    $(btn).click(onItemClick)
     $(btn).attr('title', "Deselect")
 
     cut_item = {
@@ -624,16 +634,13 @@ class Main
       item: item
     }
     @cut_items.push(cut_item)
+
     $('#cut-box').show()
     # Add some padding to the bottom so you can still see everything
     $('html').css('padding-bottom', $('#cut-box').outerHeight())
 
   _removeCutItem: (node) ->
-    index = -1
-    for i in [0...@cut_items.length]
-      if @cut_items[i].node is node
-        index = i
-        break
+    index = (item.node.id for item in @cut_items).indexOf(node.id)
 
     if index isnt -1
       cut_item = @cut_items[index]
@@ -648,7 +655,6 @@ class Main
       label_text = $('#' + node.id + ' span').text()
 
       btn = '#' + node.id + ' div.cut-btn'
-      $(btn).click(@_onCut(node, label_text))
       $(btn).attr('title', "Move to new folder")
 
   _emptyCutItems: () ->
