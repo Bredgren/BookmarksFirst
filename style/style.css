@@ -402,6 +402,10 @@ form div.radio span {
                 linear-gradient(rgb(70, 100, 255), rgb(20, 50, 150));
 }
 
+.empty {
+    margin-top: 20px;
+}
+
 #grey-out {
     width: 100%;
     height: 100%;

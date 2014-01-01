@@ -166,6 +166,12 @@ class Main
 
       anchor.hover(onHoverIn, onHoverOut)
     else
+      onGetChildren = (results) =>
+        if results.length is 0
+          anchor.append($('<div>').text('Empty').addClass('empty'))
+
+      chrome.bookmarks.getChildren(node.id, onGetChildren)
+
       anchor.click(() => @_gotoNode(node.id))
       anchor.addClass("folder")
 

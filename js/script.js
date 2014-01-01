@@ -221,7 +221,7 @@
     };
 
     Main.prototype._getNodeAnchor = function(node, li) {
-      var anchor, img, item, label, nodes, onHoverIn, onHoverOut, small_btns, x, y, _ref,
+      var anchor, img, item, label, nodes, onGetChildren, onHoverIn, onHoverOut, small_btns, x, y, _ref,
         _this = this;
 
       anchor = $('<a>');
@@ -243,6 +243,12 @@
         onHoverOut();
         anchor.hover(onHoverIn, onHoverOut);
       } else {
+        onGetChildren = function(results) {
+          if (results.length === 0) {
+            return anchor.append($('<div>').text('Empty').addClass('empty'));
+          }
+        };
+        chrome.bookmarks.getChildren(node.id, onGetChildren);
         anchor.click(function() {
           return _this._gotoNode(node.id);
         });
