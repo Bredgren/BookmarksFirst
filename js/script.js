@@ -300,7 +300,7 @@
           _this._removeCutItem(node);
           return _this._refresh();
         };
-        if (confirm("Are you sure you want to delete \"" + label.text() + "\"?")) {
+        if (confirm("Are you sure you want to delete \"" + node.title + "\"?")) {
           return chrome.bookmarks.removeTree(node.id, onSuccess);
         }
       };
@@ -319,13 +319,13 @@
         onEdit = function(event) {
           stopPropagation(event);
           _this.edit_id = node.id;
-          return _this._openEditItem(label.text(), node.url);
+          return _this._openEditItem(node.title, node.url);
         };
       } else {
         onEdit = function(event) {
           stopPropagation(event);
           _this.edit_id = node.id;
-          return _this._openEditFolder(label.text());
+          return _this._openEditFolder(node.title);
         };
       }
       edit_btn.click(onEdit);
@@ -409,7 +409,7 @@
           li = $('<li>').append(span);
           span.text(node.title);
           if (make_button) {
-            span.click(function() {
+            li.click(function() {
               return _this._gotoNode(node.id);
             });
           }
@@ -457,7 +457,7 @@
     };
 
     Main.prototype._setupBindings = function() {
-      var onCancelButton, onCancelMove, onClearSearch, onClickPage, onEditButton, onFolderRadio, onItemKeyPress, onKeyDown, onMouseUp, onMove, onNewFolder, onNewPage, onOkFolderButton, onOkItemButton, onPaste, onSearchEnter, onSearchKeyUp, onSearchRadio, onSetDefaultFolder, search,
+      var onCancelButton, onCancelMove, onClearSearch, onClickPage, onEditButton, onFolderRadio, onItemKeyPress, onKeyDown, onKeyPressFolder, onMouseUp, onMove, onNewFolder, onNewPage, onOkFolderButton, onOkItemButton, onPaste, onSearchEnter, onSearchKeyUp, onSearchRadio, onSetDefaultFolder, search,
         _this = this;
 
       search = function() {
@@ -566,7 +566,13 @@
         });
       };
       $('#edit-folder .ok').click(onOkFolderButton);
-      $('#edit-folder form').submit(onOkFolderButton);
+      onKeyPressFolder = function(event) {
+        if (event.which === 13) {
+          onOkFolderButton();
+          return false;
+        }
+      };
+      $('#edit-folder form').keypress(onKeyPressFolder);
       onOkItemButton = function() {
         var changes;
 

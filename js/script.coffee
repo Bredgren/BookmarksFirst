@@ -205,7 +205,7 @@ class Main
       onSuccess = =>
         @_removeCutItem(node) # careful not to leave in deleted items
         @_refresh()
-      if confirm("Are you sure you want to delete \"" + label.text() + "\"?")
+      if confirm("Are you sure you want to delete \"" + node.title + "\"?")
         chrome.bookmarks.removeTree(node.id, onSuccess)
 
     delete_btn.click(onDelete)
@@ -220,12 +220,12 @@ class Main
       onEdit = (event) =>
         stopPropagation(event)
         @edit_id = node.id
-        @_openEditItem(label.text(), node.url)
+        @_openEditItem(node.title, node.url)
     else
       onEdit = (event) =>
         stopPropagation(event)
         @edit_id = node.id
-        @_openEditFolder(label.text())
+        @_openEditFolder(node.title)
 
     edit_btn.click(onEdit)
 
@@ -293,7 +293,7 @@ class Main
         li = $('<li>').append(span)
         span.text(node.title)
         if make_button
-          span.click(() => @_gotoNode(node.id))
+          li.click(() => @_gotoNode(node.id))
         li.append(span)
         crumbs_list.append(li)
 
@@ -425,7 +425,12 @@ class Main
 
     $('#edit-folder .ok').click(onOkFolderButton)
 
-    $('#edit-folder form').submit(onOkFolderButton)
+    onKeyPressFolder = (event) =>
+      if event.which is 13
+        onOkFolderButton()
+        return false #prevents page from reloading
+
+    $('#edit-folder form').keypress(onKeyPressFolder)
 
     onOkItemButton = =>
       changes = {
