@@ -425,7 +425,17 @@ class Main
     $('#default-folder-button').click(onSetDefaultFolder)
 
     onOpenAll = =>
-      console.log('open all')
+      onGetChildren = (results) =>
+        urls = (node.url for node in results when node.url)
+        console.log(urls)
+        if urls.length isnt 0
+          properties = {
+            url: urls
+          }
+          chrome.windows.create(properties, ()->)
+
+      chrome.bookmarks.getChildren(@current_node, onGetChildren)
+
 
     $('#open-all-button').click(onOpenAll)
 

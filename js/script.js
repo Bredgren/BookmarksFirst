@@ -580,7 +580,32 @@
       };
       $('#default-folder-button').click(onSetDefaultFolder);
       onOpenAll = function() {
-        return console.log('open all');
+        var onGetChildren;
+
+        onGetChildren = function(results) {
+          var node, properties, urls;
+
+          urls = (function() {
+            var _i, _len, _results;
+
+            _results = [];
+            for (_i = 0, _len = results.length; _i < _len; _i++) {
+              node = results[_i];
+              if (node.url) {
+                _results.push(node.url);
+              }
+            }
+            return _results;
+          })();
+          console.log(urls);
+          if (urls.length !== 0) {
+            properties = {
+              url: urls
+            };
+            return chrome.windows.create(properties, function() {});
+          }
+        };
+        return chrome.bookmarks.getChildren(_this.current_node, onGetChildren);
       };
       $('#open-all-button').click(onOpenAll);
       onEditButton = function() {
