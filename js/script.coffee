@@ -10,6 +10,18 @@ String::contains = (str, case_sensitive=false) ->
   else
     return @toLowerCase().indexOf(str.toLowerCase()) != -1
 
+validURL = (url) ->
+  double_slash = url.search('://')
+  http = url.search('http://')
+  https = url.search('https://')
+
+  if http is 0 or https is 0
+    return url
+  else if double_slash isnt -1
+    return 'http' + url[double_slash..]
+  else
+    return 'http://' + url
+
 zip = () ->
   lengthArray = (arr.length for arr in arguments)
   length = Math.min(lengthArray...)
@@ -441,7 +453,7 @@ class Main
     $('#edit-folder .ok').click(onOkFolderButton)
 
     onKeyPressFolder = (event) =>
-      if event.which is 13
+      if event.which is 13 # Enter
         onOkFolderButton()
         return false #prevents page from reloading
 
@@ -450,7 +462,7 @@ class Main
     onOkItemButton = =>
       changes = {
         title: $('#input-item-name').val(),
-        url: $('#input-item-url').val()
+        url: validURL($('#input-item-url').val())
       }
       chrome.bookmarks.update(@edit_id, changes, () =>
         @_hideEditBoxes()
