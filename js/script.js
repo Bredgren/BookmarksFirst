@@ -372,7 +372,6 @@
         }).call(_this), _ref) >= 0) {
           return _this._removeCutItem(node, label_text);
         } else {
-          $('#' + node.id).css('border-color', 'rgb(0, 150, 0)');
           return _this._addCutItem(node, label_text);
         }
       };
@@ -660,7 +659,44 @@
       };
       $('#new-page-button').click(onNewPage);
       onCutAll = function() {
-        return $('.cut-btn').trigger('click');
+        var onGetChildren;
+
+        onGetChildren = function(results) {
+          var cut_ids, cut_nodes, item, node, uncut_nodes, _i, _j, _len, _len1, _ref, _results;
+
+          cut_ids = (function() {
+            var _i, _len, _ref, _results;
+
+            _ref = this.cut_items;
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              item = _ref[_i];
+              _results.push(item.node.id);
+            }
+            return _results;
+          }).call(_this);
+          cut_nodes = [];
+          uncut_nodes = [];
+          for (_i = 0, _len = results.length; _i < _len; _i++) {
+            node = results[_i];
+            if (_ref = node.id, __indexOf.call(cut_ids, _ref) >= 0) {
+              cut_nodes.push(node);
+            } else {
+              uncut_nodes.push(node);
+            }
+          }
+          if (cut_nodes.length === 0 || uncut_nodes.length === 0) {
+            return $('.cut-btn').trigger('click');
+          } else {
+            _results = [];
+            for (_j = 0, _len1 = uncut_nodes.length; _j < _len1; _j++) {
+              node = uncut_nodes[_j];
+              _results.push(_this._addCutItem(node, _this._getNodeLabel(node).text()));
+            }
+            return _results;
+          }
+        };
+        return chrome.bookmarks.getChildren(_this.current_node, onGetChildren);
       };
       $('#cut-all-button').click(onCutAll);
       onMove = function(event) {
@@ -852,6 +888,7 @@
         item: item
       };
       this.cut_items.push(cut_item);
+      $('#' + node.id).css('border-color', 'rgb(0, 150, 0)');
       $('#cut-box').show();
       return $('html').css('padding-bottom', $('#cut-box').outerHeight());
     };

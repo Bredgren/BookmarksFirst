@@ -255,7 +255,6 @@ class Main
       if node.id in (item.node.id for item in @cut_items)
         @_removeCutItem(node, label_text)
       else
-        $('#' + node.id).css('border-color', 'rgb(0, 150, 0)')
         @_addCutItem(node, label_text)
 
   _getNodeSmallCut: (node, label, anchor) ->
@@ -502,10 +501,24 @@ class Main
     $('#new-page-button').click(onNewPage)
 
     onCutAll = =>
-      # if non are cut or all are cut
-      $('.cut-btn').trigger('click')
-      # else
-      #   cut the uncut ones
+      onGetChildren = (results) =>
+        cut_ids = (item.node.id for item in @cut_items)
+        cut_nodes = []
+        uncut_nodes = []
+
+        for node in results
+          if node.id in cut_ids
+            cut_nodes.push(node)
+          else
+            uncut_nodes.push(node)
+
+        if cut_nodes.length is 0 or uncut_nodes.length is 0 #none or all are cut
+          $('.cut-btn').trigger('click')
+        else
+          for node in uncut_nodes
+            @_addCutItem(node, @_getNodeLabel(node).text())
+
+      chrome.bookmarks.getChildren(@current_node, onGetChildren)
 
     $('#cut-all-button').click(onCutAll)
 
@@ -646,6 +659,8 @@ class Main
       item: item
     }
     @cut_items.push(cut_item)
+
+    $('#' + node.id).css('border-color', 'rgb(0, 150, 0)')
 
     $('#cut-box').show()
     # Add some padding to the bottom so you can still see everything
